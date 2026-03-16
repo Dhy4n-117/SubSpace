@@ -1,15 +1,18 @@
 import { NhostClient } from '@nhost/react';
 import { gql } from '@apollo/client';
 
-const subdomain = import.meta.env.VITE_NHOST_SUBDOMAIN;
-const region = import.meta.env.VITE_NHOST_REGION;
+const subdomain = import.meta.env.VITE_NHOST_SUBDOMAIN || 'wovzonztpgwcblmdbdlk';
+const region = import.meta.env.VITE_NHOST_REGION || 'ap-south-1';
 
-console.log('Nhost Configuration:', { subdomain, region });
+console.log('Nhost Initialization:', { subdomain, region });
 
 export const nhost = new NhostClient({
-  subdomain: subdomain || 'local',
-  region: region || 'local'
+  authUrl: `https://${subdomain}.auth.${region}.nhost.run/v1`,
+  graphqlUrl: `https://${subdomain}.graphql.${region}.nhost.run/v1`,
+  storageUrl: `https://${subdomain}.storage.${region}.nhost.run/v1`,
+  functionsUrl: `https://${subdomain}.functions.${region}.nhost.run/v1`,
 });
+
 
 
 export const GET_TODOS = gql`
