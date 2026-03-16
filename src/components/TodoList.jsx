@@ -13,7 +13,7 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-const TodoList = ({ activeTab }) => {
+const TodoList = ({ activeTab, searchQuery }) => {
   const [newTodo, setNewTodo] = useState('');
   const { loading, error, data } = useQuery(GET_TODOS);
   const [addTodo] = useMutation(ADD_TODO, {
@@ -42,13 +42,35 @@ const TodoList = ({ activeTab }) => {
 
   const getFilteredTodos = () => {
     if (!data?.todos) return [];
-    // For now, we'll just filter statically since backend support for these categories would require schema changes
-    // In a real app, these would be based on column flags
+    
+    let filtered = [...data.todos];
+
+    // Filter by Tab
     switch (activeTab) {
-      case 'today': return data.todos.slice(0, 3); // Sample
-      case 'important': return data.todos.filter(t => t.title.toLowerCase().includes('!')); // Sample logic
-      default: return data.todos;
+      case 'today': 
+        // Logic: Tasks created today or with "today" in title
+        const today = new Date().toISOString().split('T')[0];
+        filtered = filtered.filter(t => t.created_at.startsWith(today) || t.title.toLowerCase().includes('today'));
+        break;
+      case 'important': 
+        // Logic: Tasks with ! or "important" in title
+        filtered = filtered.filter(t => t.title.includes('!') || t.title.toLowerCase().includes('important') || t.title.toLowerCase().includes('urgent'));
+        break;
+      case 'planned':
+        // Logic: Tasks with date-like strings (simple mockup)
+        filtered = filtered.filter(t => /\d+/.test(t.title));
+        break;
+      default: 
+        break;
     }
+
+    // Filter by Search Query
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase();
+      filtered = filtered.filter(t => t.title.toLowerCase().includes(query));
+    }
+
+    return filtered;
   };
 
   if (loading) return null;
