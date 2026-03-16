@@ -8,11 +8,11 @@
     "render-build": "npm install --legacy-peer-deps && npm run build"
   },
   "dependencies": {
-    "@apollo/client": "^3.11.8",
-    "@nhost/nhost-js": "^4.5.3",
+    "@apollo/client": "^3.12.0",
+    "@nhost/nhost-js": "^4.5.0",
     "@nhost/react": "^3.11.2",
     "@nhost/react-apollo": "^18.0.2",
-    "framer-motion": "^11.11.1",
+    "framer-motion": "^11.11.0",
     "graphql": "^16.9.0",
     "lucide-react": "^0.454.0",
     "react": "^18.3.1",
