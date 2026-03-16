@@ -29,7 +29,6 @@ function Sidebar({ activeTab, setActiveTab, isCollapsed, setIsCollapsed }) {
     { id: 'all', label: 'All Tasks', icon: LayoutGrid },
     { id: 'today', label: 'My Day', icon: Sun },
     { id: 'important', label: 'Important', icon: Star },
-    { id: 'planned', label: 'Planned', icon: Calendar },
   ];
 
   const handleSignOut = async () => {

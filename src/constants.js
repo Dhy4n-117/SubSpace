@@ -51,3 +51,11 @@ export const DELETE_TODO = gql`
     }
   }
 `;
+export const UPDATE_TODO_TITLE = gql`
+  mutation UpdateTodoTitle($id: uuid!, $title: String!) {
+    update_todos_by_pk(pk_columns: { id: $id }, _set: { title: $title }) {
+      id
+      title
+    }
+  }
+`;

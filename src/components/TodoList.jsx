@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation } from '@apollo/client';
-import { GET_TODOS, ADD_TODO, TOGGLE_TODO, DELETE_TODO } from '../constants';
+import { GET_TODOS, ADD_TODO, TOGGLE_TODO, DELETE_TODO, UPDATE_TODO_TITLE } from '../constants';
 import { 
   Plus, 
   Trash2, 
@@ -9,7 +9,8 @@ import {
   Star, 
   ChevronRight,
   MoreVertical,
-  Calendar as CalendarIcon
+  Calendar as CalendarIcon,
+  StarOff
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -23,19 +24,34 @@ const TodoList = ({ activeTab, searchQuery }) => {
   const [deleteTodo] = useMutation(DELETE_TODO, {
     refetchQueries: [{ query: GET_TODOS }],
   });
+  const [updateTodoTitle] = useMutation(UPDATE_TODO_TITLE, {
+    refetchQueries: [{ query: GET_TODOS }],
+  });
 
   const handleAdd = async (e) => {
     e.preventDefault();
     if (!newTodo.trim()) return;
-    await addTodo({ variables: { title: newTodo } });
+    
+    // Auto-star if in important view
+    let finalTitle = newTodo;
+    if (activeTab === 'important') {
+      finalTitle = `⭐ ${newTodo}`;
+    }
+    
+    await addTodo({ variables: { title: finalTitle } });
     setNewTodo('');
+  };
+
+  const toggleStar = async (todo) => {
+    const isStarred = todo.title.startsWith('⭐ ');
+    const newTitle = isStarred ? todo.title.replace('⭐ ', '') : `⭐ ${todo.title}`;
+    await updateTodoTitle({ variables: { id: todo.id, title: newTitle } });
   };
 
   const getPageTitle = () => {
     switch (activeTab) {
       case 'today': return 'My Day';
       case 'important': return 'Important';
-      case 'planned': return 'Planned';
       default: return 'All Tasks';
     }
   };
@@ -48,17 +64,11 @@ const TodoList = ({ activeTab, searchQuery }) => {
     // Filter by Tab
     switch (activeTab) {
       case 'today': 
-        // Logic: Tasks created today or with "today" in title
         const today = new Date().toISOString().split('T')[0];
         filtered = filtered.filter(t => t.created_at.startsWith(today) || t.title.toLowerCase().includes('today'));
         break;
       case 'important': 
-        // Logic: Tasks with ! or "important" in title
-        filtered = filtered.filter(t => t.title.includes('!') || t.title.toLowerCase().includes('important') || t.title.toLowerCase().includes('urgent'));
-        break;
-      case 'planned':
-        // Logic: Tasks with date-like strings (simple mockup)
-        filtered = filtered.filter(t => /\d+/.test(t.title));
+        filtered = filtered.filter(t => t.title.startsWith('⭐ '));
         break;
       default: 
         break;
@@ -133,7 +143,9 @@ const TodoList = ({ activeTab, searchQuery }) => {
               </div>
               
               <div style={{ flex: 1 }}>
-                <div className="task-title" style={{ fontWeight: '600', marginBottom: '0.25rem' }}>{todo.title}</div>
+                <div className="task-title" style={{ fontWeight: '600', marginBottom: '0.25rem' }}>
+                  {todo.title.startsWith('⭐ ') ? todo.title.replace('⭐ ', '') : todo.title}
+                </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', fontSize: '0.75rem', color: 'var(--text-muted)' }}>
                   <span style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
                     <CalendarIcon size={12} /> Tasks
@@ -145,8 +157,12 @@ const TodoList = ({ activeTab, searchQuery }) => {
               </div>
 
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <button className="btn-ghost btn-icon" style={{ color: 'var(--text-muted)' }}>
-                  <Star size={18} />
+                <button 
+                  className={`btn-ghost btn-icon ${todo.title.startsWith('⭐ ') ? 'active' : ''}`} 
+                  style={{ color: todo.title.startsWith('⭐ ') ? '#fbbf24' : 'var(--text-muted)' }}
+                  onClick={() => toggleStar(todo)}
+                >
+                  {todo.title.startsWith('⭐ ') ? <Star size={18} fill="#fbbf24" /> : <Star size={18} />}
                 </button>
                 <button 
                   className="btn-ghost btn-icon" 
