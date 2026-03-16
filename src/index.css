@@ -242,12 +242,16 @@ h1 {
   display: flex;
   align-items: center;
   gap: 1rem;
-  padding: 0.875rem 1rem;
+  padding: 0.875rem;
   border-radius: 12px;
   color: var(--text-muted);
   cursor: pointer;
   transition: var(--transition);
   text-decoration: none;
+  min-height: 48px;
+  border: none;
+  background: transparent;
+  width: 100%;
 }
 
 .nav-item:hover, .nav-item.active {

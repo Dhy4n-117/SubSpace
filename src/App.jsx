@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { NhostProvider, useAuthenticationStatus } from '@nhost/react';
+import { NhostProvider, useAuthenticationStatus, useSignOut } from '@nhost/react';
 import { NhostApolloProvider } from '@nhost/react-apollo';
 import { nhost } from './constants';
 import Auth from './components/Auth';
@@ -23,7 +23,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import './index.css';
 
 function Sidebar({ activeTab, setActiveTab, isCollapsed, setIsCollapsed }) {
-  const { signOut } = nhost.auth;
+  const { signOut } = useSignOut();
 
   const navItems = [
     { id: 'all', label: 'All Tasks', icon: LayoutGrid },
@@ -33,11 +33,7 @@ function Sidebar({ activeTab, setActiveTab, isCollapsed, setIsCollapsed }) {
   ];
 
   const handleSignOut = async () => {
-    try {
-      await signOut();
-    } catch (e) {
-      console.error('Sign out error:', e);
-    }
+    await signOut();
   };
 
   return (
@@ -107,22 +103,20 @@ function Sidebar({ activeTab, setActiveTab, isCollapsed, setIsCollapsed }) {
       </nav>
 
       <div style={{ marginTop: 'auto', display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
-        <div 
-          className="nav-item" 
-          style={{ justifyContent: isCollapsed ? 'center' : 'flex-start' }}
-          onClick={() => alert('Settings - Coming Soon')}
-        >
-          <Settings size={20} />
-          {!isCollapsed && <span>Settings</span>}
-        </div>
-        <div 
+        <button 
           className="nav-item" 
           onClick={handleSignOut}
-          style={{ justifyContent: isCollapsed ? 'center' : 'flex-start' }}
+          style={{ 
+            justifyContent: isCollapsed ? 'center' : 'flex-start', 
+            width: '100%', 
+            border: 'none', 
+            background: 'transparent',
+            cursor: 'pointer'
+          }}
         >
           <LogOut size={20} />
           {!isCollapsed && <span>Sign Out</span>}
-        </div>
+        </button>
       </div>
     </motion.div>
   );
@@ -140,19 +134,6 @@ function Header({ searchQuery, setSearchQuery }) {
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
         />
-      </div>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-        <button className="btn btn-ghost btn-icon glass" onClick={() => alert('Notifications - No new alerts')}>
-          <Bell size={20} />
-        </button>
-        <div 
-          className="glass" 
-          style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.5rem 1rem 0.5rem 0.5rem', borderRadius: '100px', cursor: 'pointer' }}
-          onClick={() => alert('Account Details - Coming Soon')}
-        >
-          <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: 'linear-gradient(45deg, var(--primary), var(--accent))' }} />
-          <span style={{ fontSize: '0.875rem', fontWeight: '600' }}>Pro User</span>
-        </div>
       </div>
     </header>
   );
