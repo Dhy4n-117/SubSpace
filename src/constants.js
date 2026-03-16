@@ -1,8 +1,8 @@
 import { NhostClient } from '@nhost/react';
 import { gql } from '@apollo/client';
 
-const subdomain = import.meta.env.VITE_NHOST_SUBDOMAIN || 'wovzonztpgwcblmdbdlk';
-const region = import.meta.env.VITE_NHOST_REGION || 'ap-south-1';
+const subdomain = import.meta.env.VITE_NHOST_SUBDOMAIN || 'jbjdzykfhrgdhnfoctbb';
+const region = import.meta.env.VITE_NHOST_REGION || 'us-east-1';
 
 export const nhost = new NhostClient({
   authUrl: `https://${subdomain}.auth.${region}.nhost.run/v1`,
