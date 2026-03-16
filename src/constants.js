@@ -1,10 +1,16 @@
 import { NhostClient } from '@nhost/react';
 import { gql } from '@apollo/client';
 
+const subdomain = import.meta.env.VITE_NHOST_SUBDOMAIN;
+const region = import.meta.env.VITE_NHOST_REGION;
+
+console.log('Nhost Configuration:', { subdomain, region });
+
 export const nhost = new NhostClient({
-  subdomain: import.meta.env.VITE_NHOST_SUBDOMAIN || 'local',
-  region: import.meta.env.VITE_NHOST_REGION || 'local'
+  subdomain: subdomain || 'local',
+  region: region || 'local'
 });
+
 
 export const GET_TODOS = gql`
   query GetTodos {
